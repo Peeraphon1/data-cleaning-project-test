@@ -100,7 +100,20 @@ def clean_html(text):
 
 
 def clean_zero_width_space(text):
-    return text
+    # ลบตัวอักษรล่องหน ยกเว้น ZWJ ที่เชื่อมอีโมจิ (ต้องเก็บไว้ ไม่งั้นอีโมจิครอบครัว 👨‍👩‍👧 แตกเป็นหลายตัว)
+    cleaned = []
+    for i, char in enumerate(text):
+        if char not in ZERO_WIDTH_CHARS:
+            cleaned.append(char)
+            continue
+        if char == "‍":
+            prev_char = text[i - 1] if i > 0 else ""
+            next_char = text[i + 1] if i + 1 < len(text) else ""
+            if (prev_char and ord(prev_char) >= 0x2190) or (
+                next_char and ord(next_char) >= 0x2190
+            ):
+                cleaned.append(char)
+    return "".join(cleaned)
 
 
 def clean_different_unicode(text):
