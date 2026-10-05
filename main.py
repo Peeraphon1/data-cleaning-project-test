@@ -34,7 +34,20 @@ def detect_html(text):
 
 
 def detect_zero_width_space(text):
-    return None
+    # ตัวอักษรล่องหน: ZWSP, ZWNJ, ZWJ, word joiner, BOM
+    for i, char in enumerate(text):
+        if char not in ZERO_WIDTH_CHARS:
+            continue
+        if char == "‍":
+            # ZWJ ที่เชื่อมอีโมจิ (เช่น 👨‍👩‍👧) เป็นของจริง ไม่ใช่ตัวที่แทรกเข้ามา
+            prev_char = text[i - 1] if i > 0 else ""
+            next_char = text[i + 1] if i + 1 < len(text) else ""
+            if (prev_char and ord(prev_char) >= 0x2190) or (
+                next_char and ord(next_char) >= 0x2190
+            ):
+                continue
+        return True
+    return False
 
 
 def detect_different_unicode(text):
