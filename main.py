@@ -93,7 +93,10 @@ def clean_encoding_error(text):
 
 
 def clean_html(text):
-    return text
+    # ลบแท็ก (<br>, <p>, </div>) -> ถอดรหัส (&amp; -> &, &#3585; -> ก) -> &nbsp; เป็นช่องว่างปกติ
+    text = HTML_TAG_PATTERN.sub("", text)
+    text = html.unescape(text)
+    return text.replace(" ", " ")
 
 
 def clean_zero_width_space(text):
